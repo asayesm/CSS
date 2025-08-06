@@ -2,8 +2,8 @@ name: Auto Commit si hay cambios
 
 on:
   schedule:
-    - cron: '* * * * *'  # Ejecutar cada minuto (aunque GitHub puede espaciarlo)
-  workflow_dispatch:      # También puedes ejecutarlo manualmente
+    - cron: '* * * * *'  # ⏰ Cada minuto (GitHub lo limita a ~5 min en la práctica)
+  workflow_dispatch:      # Permite ejecutarlo manualmente desde la pestaña Actions
 
 jobs:
   auto-commit:
@@ -18,15 +18,13 @@ jobs:
           git config --global user.name "Angel Sayes"
           git config --global user.email "asayesm@gmail.com"
 
-      - name: Verificar cambios
+      - name: Hacer commit y push solo si hay cambios
         run: |
           git add .
           if git diff --cached --quiet; then
             echo "⚠️ No hay cambios para commitear. Saliendo..."
             exit 0
+          else
+            git commit -m "Auto-commit: $(date)"
+            git push
           fi
-
-      - name: Hacer commit y push
-        run: |
-          git commit -m "Auto-commit: $(date)"
-          git push
