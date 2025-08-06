@@ -1,0 +1,32 @@
+name: Auto Commit si hay cambios
+
+on:
+  schedule:
+    - cron: '* * * * *'  # Ejecutar cada minuto (aunque GitHub puede espaciarlo)
+  workflow_dispatch:      # También puedes ejecutarlo manualmente
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v3
+
+      - name: Configurar usuario Git
+        run: |
+          git config --global user.name "Angel Sayes"
+          git config --global user.email "asayesm@gmail.com"
+
+      - name: Verificar cambios
+        run: |
+          git add .
+          if git diff --cached --quiet; then
+            echo "⚠️ No hay cambios para commitear. Saliendo..."
+            exit 0
+          fi
+
+      - name: Hacer commit y push
+        run: |
+          git commit -m "Auto-commit: $(date)"
+          git push
